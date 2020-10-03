@@ -1,0 +1,8 @@
+version: "3.7"
+
+services:
+    diodon:
+        build: "."
+        env_file: .env
+        volumes:
+            - ${PWD}/data.json:/data.json
