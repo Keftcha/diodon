@@ -3,3 +3,6 @@
 
 # Environment variables
 .env
+
+# The data Diodon learn
+data.json

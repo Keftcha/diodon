@@ -8,9 +8,11 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/keftcha/markovchaingo"
 )
 
 var discordToken string
+var mcg *markovchaingo.MarkovChainGo
 
 func init() {
 	discordToken = os.Getenv("DISCORD")
@@ -18,6 +20,8 @@ func init() {
 	if discordToken == "" {
 		panic("No discord token found in envoronment variable `DISCORD_TOKEN`.")
 	}
+
+	mcg = markovchaingo.New("in-memory:///data.json")
 }
 
 func main() {
@@ -48,14 +52,15 @@ func main() {
 }
 
 func learn(s *discordgo.Session, m *discordgo.MessageCreate) {
-	fmt.Printf("%s write: %s\n", m.Author.Username, m.Content)
+	mcg.Learn(m.Content)
 }
 
 func talk(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Check if we are mentioned
 	for _, mentionedUsers := range m.Mentions {
 		if mentionedUsers.ID == s.State.User.ID {
-			fmt.Println("Mentioned")
+			sentence := mcg.Talk()
+			s.ChannelMessageSend(m.ChannelID, sentence)
 		}
 	}
 }
