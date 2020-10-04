@@ -21,7 +21,7 @@ func init() {
 		panic("No discord token found in envoronment variable `DISCORD_TOKEN`.")
 	}
 
-	mcg = markovchaingo.New("in-memory:///data.json")
+	mcg = markovchaingo.New("file:///data.json")
 }
 
 func main() {
@@ -57,10 +57,15 @@ func learn(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func talk(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Check if we are mentioned
+	shouldAnswer := false
 	for _, mentionedUsers := range m.Mentions {
 		if mentionedUsers.ID == s.State.User.ID {
-			sentence := mcg.Talk()
-			s.ChannelMessageSend(m.ChannelID, sentence)
+			shouldAnswer = true
+			break
 		}
+	}
+	if shouldAnswer && m.Author.ID != s.State.User.ID {
+		sentence := mcg.Talk()
+		s.ChannelMessageSend(m.ChannelID, sentence)
 	}
 }
