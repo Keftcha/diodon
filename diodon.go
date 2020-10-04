@@ -21,7 +21,11 @@ func init() {
 		panic("No discord token found in envoronment variable `DISCORD_TOKEN`.")
 	}
 
-	mcg = markovchaingo.New("file:///data.json")
+	connectionString := os.Getenv("CONNECTION_STRING")
+	if connectionString == "" {
+		panic("No connection string provided")
+	}
+	mcg = markovchaingo.New(connectionString)
 }
 
 func main() {
