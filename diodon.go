@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
@@ -12,13 +14,19 @@ import (
 )
 
 var discordToken string
+var talkiness float64
 var mcg *markovchaingo.MarkovChainGo
 
 func init() {
 	discordToken = os.Getenv("DISCORD")
-
 	if discordToken == "" {
 		panic("No discord token found in envoronment variable `DISCORD_TOKEN`.")
+	}
+
+	var err error
+	talkiness, err = strconv.ParseFloat(os.Getenv("TALKINESS"), 64)
+	if err != nil {
+		panic(err)
 	}
 
 	connectionString := os.Getenv("CONNECTION_STRING")
@@ -64,13 +72,7 @@ func learn(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func talk(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Check if we are mentioned
-	shouldAnswer := false
-	for _, mentionedUsers := range m.Mentions {
-		if mentionedUsers.ID == s.State.User.ID {
-			shouldAnswer = true
-			break
-		}
-	}
+	shouldAnswer := mentioned(m.Mentions, s.State.User) || rand.Float64() < talkiness
 
 	if shouldAnswer && m.Author.ID != s.State.User.ID {
 		if sentence, err := mcg.Talk(); err != nil {
@@ -80,4 +82,13 @@ func talk(s *discordgo.Session, m *discordgo.MessageCreate) {
 			s.ChannelMessageSend(m.ChannelID, sentence)
 		}
 	}
+}
+
+func mentioned(users []*discordgo.User, user *discordgo.User) bool {
+	for _, mentionedUsers := range users {
+		if mentionedUsers.ID == user.ID {
+			return true
+		}
+	}
+	return false
 }
