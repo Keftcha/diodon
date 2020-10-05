@@ -16,6 +16,8 @@ He will answer you when you mention him.
 
 The `.env` file can be filled with the help of the `.env.tpl` file.
 
+### Variables
+
 The `DISCORD` variable is the discord token needed to connect to discord
 
 The `TALKINESS` variable will define the frequency the bot answer by him self
