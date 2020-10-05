@@ -56,7 +56,10 @@ func main() {
 }
 
 func learn(s *discordgo.Session, m *discordgo.MessageCreate) {
-	mcg.Learn(m.Content)
+	err := mcg.Learn(m.Content)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func talk(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -68,8 +71,13 @@ func talk(s *discordgo.Session, m *discordgo.MessageCreate) {
 			break
 		}
 	}
+
 	if shouldAnswer && m.Author.ID != s.State.User.ID {
-		sentence := mcg.Talk()
-		s.ChannelMessageSend(m.ChannelID, sentence)
+		if sentence, err := mcg.Talk(); err != nil {
+			fmt.Println(err)
+			s.ChannelMessageSend(m.ChannelID, "An error occurred.")
+		} else {
+			s.ChannelMessageSend(m.ChannelID, sentence)
+		}
 	}
 }
