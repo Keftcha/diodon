@@ -10,7 +10,7 @@ algorithm.
 ## Usage
 
 You have nothing to do to make him learn.  
-He will answer you when you mention him.
+He will answer you when you mention him (or by changing his talkiness).
 
 ## Envorinment variable (cf. `.env` file)
 
