@@ -20,7 +20,7 @@ var mcg *markovchaingo.MarkovChainGo
 func init() {
 	discordToken = os.Getenv("DISCORD")
 	if discordToken == "" {
-		panic("No discord token found in envoronment variable `DISCORD_TOKEN`.")
+		panic("No discord token found in environment variable `DISCORD_TOKEN`.")
 	}
 
 	var err error
